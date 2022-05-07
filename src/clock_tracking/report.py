@@ -55,26 +55,47 @@ class DetailsReport(TaskReportBase):
     def print_report(self, collection):
         periods = []
         for task in collection.tasks:
+            # print(task)
             for p in task.periods:
+                # print(p)
                 periods.append([p, task])
 
         periods = sorted(periods, key=lambda t: t[0].start)
-        total_width = os.get_terminal_size().columns
-        remaining_width = total_width - (10 + 12 + 6 + 6 + 20 + 10)
-        if remaining_width < 0:
-            print("Terminal is too small to show details.")
-            exit
+        # total_width = os.get_terminal_size().columns
+        # remaining_width = total_width - (10 + 12 + 6 + 6 + 20 + 10)
+        # if remaining_width < 0:
+        #     print("Terminal is too small to show details.")
+        #     exit
 
-        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(remaining_width))
+        print(
+            str('Duration,') +\
+            'Date,' +\
+            'Start,' +\
+            'Stop,' +\
+            'Tags,' +\
+            # 'IDs,'.ljust(10) +\
+            'Name'
+        )
         for kv in periods:
             p = kv[0]
-            print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10), TerminalColors.GREEN) \
-                + DateTimeUtils.show_date(p.start).ljust(12) \
-                + DateTimeUtils.show_time(p.start).ljust(6) \
-                + DateTimeUtils.show_time(p.end).ljust(6) \
-                + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].tags), 20), TerminalColors.BLUE) \
-                + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
-                + PrintHelpers.max_width(kv[1].description, remaining_width))
+            print(
+                DateTimeUtils.show_timedelta(p.end - p.start) + ',' \
+                + DateTimeUtils.show_date(p.start)  + ',' \
+                + DateTimeUtils.show_time(p.start) + ','  \
+                + DateTimeUtils.show_time(p.end) + ','  \
+                + ';'.join(kv[1].tags) + ',' \
+                # + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
+                + kv[1].description
+            )
+            # print(
+            #     PrintHelpers.colorize(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10), TerminalColors.GREEN) \
+            #     + DateTimeUtils.show_date(p.start).ljust(12) \
+            #     + DateTimeUtils.show_time(p.start).ljust(6) \
+            #     + DateTimeUtils.show_time(p.end).ljust(6) \
+            #     + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].tags), 20), TerminalColors.BLUE) \
+            #     + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
+            #     + PrintHelpers.max_width(kv[1].description, 20)
+            # )
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
@@ -89,7 +110,7 @@ class TotalTimeReport(TaskReportBase):
         target_total = self.target_time.target
         if self.target_time.is_per_day:
             target_total = target_total * len(days)
-        
+
         total_difference = total_duration - target_total
         return ' (' + DateTimeUtils.show_timedelta(total_difference) + ')', ' (' + DateTimeUtils.show_timedelta(total_difference / len(days)) + ')'
 
@@ -129,7 +150,7 @@ class CategoriesReport(TaskReportBase):
                 tags[tag_name] += task.duration_total()
             else:
                 tags[tag_name] = task.duration_total()
-        
+
         return sorted(tags.items(), key=lambda kv: kv[1], reverse=True)
 
     def get_graph_length(self, max_tag_length):
@@ -158,7 +179,7 @@ class CategoriesReport(TaskReportBase):
 class DayTimelineReport(TaskReportBase):
     def __init__(self):
         super(DayTimelineReport, self).__init__()
-    
+
     def print_report(self, collection):
         periods = []
         for task in collection.tasks:
@@ -198,5 +219,3 @@ class TagsReport(TaskReportBase):
 
         for tag in tags:
             print(tag)
-
-    
