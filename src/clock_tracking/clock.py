@@ -14,7 +14,7 @@ class Clock():
         self.reports = []
         self.file = expanduser('~') + '/clock.txt'
 
-    # Parses the arguments from the options.ClockArguments() and 
+    # Parses the arguments from the options.ClockArguments() and
     # fills in the self.file, self.filters and self.reports
     def parse_arguments(self):
         self.arg.parse()
@@ -33,8 +33,8 @@ class Clock():
             self.reports.append(report.TagsReport())
         elif self.arg.options.categories:
             self.reports.append(report.CategoriesReport(len(self.arg.arguments)))
-        if self.arg.options.details or self.arg.options.timeline or self.arg.options.categories:
-            self.reports.append(report.TotalTimeReport(self.arg.get_target_time()))
+        # if self.arg.options.details or self.arg.options.timeline or self.arg.options.categories:
+        #     self.reports.append(report.TotalTimeReport(self.arg.get_target_time()))
 
     # Filters issues according to self.filters and shows reports in self.reports
     def show(self):
